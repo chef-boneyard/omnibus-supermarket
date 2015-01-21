@@ -20,7 +20,7 @@ server {
   proxy_set_header        Host            $host;
   proxy_set_header        X-Real-IP       $remote_addr;
   proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
-  proxy_set_header        X-Forwarded-Proto https;
+  proxy_set_header        X-Forwarded-Proto http;
   proxy_pass_request_headers on;
   proxy_connect_timeout   90;
   proxy_send_timeout      90;
@@ -61,6 +61,12 @@ server {
   # redirecting broke in the past, detect it so we can redirect
   # accordingly
   if ($http_user_agent ~ 'Faraday') {
+    set $redirect_to_canonical 0;
+  }
+
+  # This stops redirects for knife cookbook site share, which uses net/http,
+  # and thus 'Ruby' as the user agent.
+  if ($http_user_agent ~ 'Ruby') {
     set $redirect_to_canonical 0;
   }
 
@@ -113,7 +119,7 @@ server {
     proxy_set_header HOST $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $remote_addr;
-    proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+    proxy_set_header X-Forwarded-Proto https;
     proxy_pass http://rails;
     proxy_redirect off;
 
