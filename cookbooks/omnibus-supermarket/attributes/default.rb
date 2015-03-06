@@ -76,6 +76,7 @@ default['supermarket']['var_directory'] = '/var/opt/supermarket'
 default['supermarket']['data_directory'] = '/var/opt/supermarket/data'
 default['supermarket']['user'] = 'supermarket'
 default['supermarket']['group'] = 'supermarket'
+default['supermarket']['topology'] = 'standalone'
 
 # ## Enterprise
 #
@@ -298,7 +299,7 @@ default['supermarket']['unicorn']['after_fork'] = nil
 
 # ## Database
 
-default['supermarket']['database']['user'] = node['supermarket']['postgresql']['username']
+default['supermarket']['database']['user'] = node['supermarket']['user']
 default['supermarket']['database']['name'] = 'supermarket'
 default['supermarket']['database']['host'] = node['supermarket']['postgresql']['listen_address']
 default['supermarket']['database']['port'] = node['supermarket']['postgresql']['port']
