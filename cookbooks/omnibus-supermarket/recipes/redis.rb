@@ -21,33 +21,33 @@ include_recipe 'omnibus-supermarket::config'
 include_recipe 'sysctl'
 include_recipe 'enterprise::runit'
 
-# Create directories
-["#{node['supermarket']['redis']['directory']}/etc",
- "#{node['supermarket']['redis']['directory']}/run",
- "#{node['supermarket']['var_directory']}/lib/redis",
- node['supermarket']['redis']['log_directory']].each do |dir|
-  directory dir do
+if service_enabled?('redis')
+  # Create directories
+  ["#{node['supermarket']['redis']['directory']}/etc",
+   "#{node['supermarket']['redis']['directory']}/run",
+   "#{node['supermarket']['var_directory']}/lib/redis",
+   node['supermarket']['redis']['log_directory']].each do |dir|
+    directory dir do
+      owner node['supermarket']['user']
+      group node['supermarket']['group']
+      mode '0700'
+      recursive true
+    end
+  end
+
+  template "#{node['supermarket']['redis']['directory']}/etc/redis.conf" do
+    source 'redis.conf.erb'
     owner node['supermarket']['user']
     group node['supermarket']['group']
-    mode '0700'
-    recursive true
+    mode '0600'
+    notifies :restart, 'runit_service[redis]'
   end
-end
 
-template "#{node['supermarket']['redis']['directory']}/etc/redis.conf" do
-  source 'redis.conf.erb'
-  owner node['supermarket']['user']
-  group node['supermarket']['group']
-  mode '0600'
-  notifies :restart, 'runit_service[redis]' if node['supermarket']['redis']['enable']
-end
+  # Redis gives you a warning if you don't do this
+  sysctl_param 'vm.overcommit_memory' do
+    value 1
+  end
 
-# Redis gives you a warning if you don't do this
-sysctl_param 'vm.overcommit_memory' do
-  value 1
-end
-
-if node['supermarket']['redis']['enable']
   component_runit_service 'redis' do
     package 'supermarket'
   end

@@ -20,15 +20,7 @@
 include_recipe 'omnibus-supermarket::config'
 include_recipe 'omnibus-supermarket::nginx'
 
-[node['supermarket']['rails']['log_directory'],
- "#{node['supermarket']['var_directory']}/rails/run"].each do |dir|
-  directory dir do
-    owner node['supermarket']['user']
-    group node['supermarket']['group']
-    mode '0700'
-    recursive true
-  end
-end
+nginx_dir = node['supermarket']['nginx']['directory']
 
 # Before and after fork blocks for Unicorn.
 #
@@ -66,31 +58,53 @@ after_fork = node['supermarket']['unicorn']['after_fork'] || <<EOF
     ActiveRecord::Base.establish_connection
 EOF
 
-template "#{node['supermarket']['var_directory']}/etc/unicorn.rb" do
-  source 'unicorn.rb.erb'
-  cookbook 'unicorn'
-  owner node['supermarket']['user']
-  group node['supermarket']['group']
-  mode '0600'
-  variables node['supermarket']['unicorn'].merge(
-    :before_fork => before_fork, :after_fork => after_fork
-  )
-  notifies :restart, 'runit_service[rails]'
-end
+if service_enabled?('rails')
+  [node['supermarket']['rails']['log_directory'],
+   "#{node['supermarket']['var_directory']}/rails/run"].each do |dir|
+    directory dir do
+      owner node['supermarket']['user']
+      group node['supermarket']['group']
+      mode '0700'
+      recursive true
+    end
+  end
 
-link "#{node['supermarket']['app_directory']}/config/unicorn.rb" do
-  to "#{node['supermarket']['var_directory']}/etc/unicorn.rb"
-end
+  template "#{node['supermarket']['var_directory']}/etc/unicorn.rb" do
+    source 'unicorn.rb.erb'
+    cookbook 'unicorn'
+    owner node['supermarket']['user']
+    group node['supermarket']['group']
+    mode '0600'
+    variables node['supermarket']['unicorn'].merge(
+      before_fork: before_fork, after_fork: after_fork
+    )
+    notifies :restart, 'runit_service[rails]'
+  end
 
-template "#{node['supermarket']['nginx']['directory']}/sites-enabled/rails" do
-  source 'rails.nginx.conf.erb'
-  owner node['supermarket']['user']
-  group node['supermarket']['group']
-  mode '0600'
-  notifies :reload, 'runit_service[nginx]' if node['supermarket']['nginx']['enable']
-end
+  link "#{node['supermarket']['app_directory']}/config/unicorn.rb" do
+    to "#{node['supermarket']['var_directory']}/etc/unicorn.rb"
+  end
 
-if node['supermarket']['rails']['enable']
+  if combined_mode?
+    %w(upstreams external).each do |conf|
+      template "#{nginx_dir}/addon.d/15-supermarket_#{conf}.conf" do
+        source "#{conf}.nginx.conf.erb"
+        owner node['supermarket']['nginx']['user']
+        group node['supermarket']['nginx']['group']
+        mode '0600'
+        notifies :restart, 'runit_service[nginx]'
+      end
+    end
+  else
+    template File.join(nginx_dir, 'sites-enabled/rails') do
+      source 'rails.nginx.conf.erb'
+      owner node['supermarket']['nginx']['user']
+      group node['supermarket']['nginx']['group']
+      mode '0600'
+      notifies :restart, 'runit_service[nginx]'
+    end
+  end
+
   component_runit_service 'rails' do
     package 'supermarket'
   end

@@ -19,17 +19,31 @@
 
 include_recipe 'omnibus-supermarket::config'
 
-# The enterprise_pg resources use the CLI to create databases and users. Set
-# these environment variables so the commands have the correct connection
-# settings.
+pg_server_env = {
+  'PGHOST' => node['supermarket']['database']['host'],
+  'PGPORT' => node['supermarket']['database']['port'].to_s
+}
 
-ENV['PGHOST'] = node['supermarket']['database']['host']
-ENV['PGPORT'] = node['supermarket']['database']['port'].to_s
+supermarket_env = {
+  'PGUSER' => node['supermarket']['database']['user'],
+  'PGPASSWORD' => node['supermarket']['database']['password'],
+  'RAILS_ENV' => 'production'
+}.merge(pg_server_env)
+
+# enterprise_pg* resources use the postgresql user rather than the database user
+# to perform their various actions.  This is important because in combined mode
+# the postgresql user is going to be 'opscode-pgsql', not 'supermarket'.
+#
+# The default Chef Server postgresql config only allows local Unix socket
+# connections from 'opscode-pgsql', so we'll only set the PGHOST and PGPORT
+# in standalone mode because the 'supermarket' user can connect via a normal
+# TCP socket.
+
+pg_server_env.each_pair { |k, v| ENV[k] = v } unless combined_mode?
 
 enterprise_pg_user node['supermarket']['database']['user'] do
   superuser true
   password node['supermarket']['database']['password'] || ''
-  # If the database user is the same as the main postgres user, don't create it.
   not_if do
     node['supermarket']['database']['user'] ==
       node['supermarket']['postgresql']['username']
@@ -42,6 +56,7 @@ end
 
 node['supermarket']['database']['extensions'].each do |ext, enable|
   execute "create postgresql #{ext} extension" do
+    env supermarket_env
     user node['supermarket']['database']['user']
     command "echo 'CREATE EXTENSION IF NOT EXISTS #{ext}' | psql"
     not_if "echo '\dx' | psql #{node['supermarket']['database']['name']} | grep #{ext}"
@@ -78,6 +93,6 @@ end
 execute 'database schema' do
   command 'bundle exec rake db:migrate db:seed'
   cwd node['supermarket']['app_directory']
-  env 'RAILS_ENV' => 'production'
+  env supermarket_env
   user node['supermarket']['user']
 end
