@@ -51,7 +51,7 @@ elsif service_enabled?('nginx')
     source 'nginx.conf.erb'
     owner node['supermarket']['nginx']['user']
     group node['supermarket']['nginx']['group']
-    mode '0644'
+    mode '0600'
     notifies :restart, 'runit_service[nginx]'
   end
 end

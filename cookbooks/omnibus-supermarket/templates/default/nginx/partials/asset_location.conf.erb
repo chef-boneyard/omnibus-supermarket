@@ -1,0 +1,9 @@
+
+location ~ ^/(assets|system)/ {
+  root <%= node['supermarket']['app_directory'] %>/public;
+  expires 1y;
+  add_header Cache-Control public;
+  add_header ETag "";
+  break;
+}
+

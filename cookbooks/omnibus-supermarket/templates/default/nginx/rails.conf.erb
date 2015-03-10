@@ -79,18 +79,8 @@ server {
   access_log <%= node['supermarket']['nginx']['log_directory'] %>/cache.log cache;
 <% end -%>
 
-  location ~ /sitemap\d*.xml.gz {
-    root <%= node['supermarket']['app_directory'] %>/public;
-    break;
-  }
-
-  location ~ ^/(assets|system)/ {
-    root <%= node['supermarket']['app_directory'] %>/public;
-    expires 1y;
-    add_header Cache-Control public;
-    add_header ETag "";
-    break;
-  }
+<%= render 'nginx/partials/sitemap_location.conf.erb' -%>
+<%= render 'nginx/partials/asset_location.conf.erb' -%>
 
 <% if node['supermarket']['nginx']['cache']['enable'] -%>
   location ~ ^/api/v1/cookbooks/.*/versions/.*(/download)?$ {

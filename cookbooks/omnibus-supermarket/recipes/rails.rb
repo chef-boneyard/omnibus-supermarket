@@ -88,7 +88,7 @@ if service_enabled?('rails')
   if combined_mode?
     %w(upstreams external).each do |conf|
       template "#{nginx_dir}/addon.d/15-supermarket_#{conf}.conf" do
-        source "#{conf}.nginx.conf.erb"
+        source "nginx/#{conf}.conf.erb"
         owner node['supermarket']['nginx']['user']
         group node['supermarket']['nginx']['group']
         mode '0600'
@@ -97,7 +97,7 @@ if service_enabled?('rails')
     end
   else
     template File.join(nginx_dir, 'sites-enabled/rails') do
-      source 'rails.nginx.conf.erb'
+      source 'nginx/rails.conf.erb'
       owner node['supermarket']['nginx']['user']
       group node['supermarket']['nginx']['group']
       mode '0600'
