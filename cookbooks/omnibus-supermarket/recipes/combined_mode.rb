@@ -17,9 +17,13 @@
 # limitations under the License.
 #
 
+include_recipe 'omnibus-supermarket::config'
+
 return unless combined_mode?
 
-unless File.exist?('/etc/opscode/chef-server-running.json')
+running_json = '/etc/opscode/chef-server-running.json'
+
+unless File.exist?(running_json)
   msg = "Supermarket is configured in 'combined mode' but a configured"
   msg << ' standalone Chef Server cannot be found.  Defaulting to a regular'
   msg << ' Supermarket install'
@@ -29,9 +33,8 @@ unless File.exist?('/etc/opscode/chef-server-running.json')
   return
 end
 
-private_chef = Chef::JSONCompat.from_json(
-  IO.read('/etc/opscode/chef-server-running.json')
-)
+# Load Chef Server attributes
+private_chef = Supermarket::Config.parse_json_file(running_json)
 node.consume_attributes('private_chef' => private_chef['private_chef'])
 
 unless node['private_chef']['topology'] == 'standalone'
@@ -40,9 +43,26 @@ unless node['private_chef']['topology'] == 'standalone'
   Chef::Application.fatal!(msg)
 end
 
-node.set['chef_server_url'] = node['fqdn']
+# Authorize oc-id
+node.set['supermarket']['chef_server_url'] = "https://#{node['fqdn']}"
+callback = "#{node['supermarket']['chef_server_url']}/auth/chef_oauth2/callback"
 
-# Configure combined postgresql
+# Create the config during compile time because we need the id and secret
+oc_id_application 'supermarket' do
+  redirect_uri callback
+  action :nothing
+end.run_action(:create)
+
+# Configure oc-id
+oauth2 = Supermarket::Config.oauth2_config_for('supermarket')
+node.set['supermarket']['chef_oauth2_app_id'] = oauth2['uid']
+node.set['supermarket']['chef_oauth2_secret'] = oauth2['secret']
+node.set['supermarket']['chef_oauth2_url'] = callback
+unless node['supermarket']['ssl']['certificate']
+  node.set['supermarket']['chef_oauth2_verify_ssl'] = false
+end
+
+# Configure postgresql
 chef_pg = node['private_chef']['postgresql']
 node.set['supermarket']['postgresql']['username'] = chef_pg['username']
 node.set['supermarket']['database']['host'] = chef_pg['listen_address']
@@ -52,7 +72,7 @@ unless node['supermarket']['database']['password']
   node.set['supermarket']['database']['password'] = SecureRandom.hex(50)
 end
 
-# Configure combined nginx
+# Configure nginx
 chef_nginx = node['private_chef']['nginx']
 chef_user = node['private_chef']['user']['username']
 

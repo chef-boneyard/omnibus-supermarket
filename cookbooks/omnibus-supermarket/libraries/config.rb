@@ -198,7 +198,7 @@ module Supermarket
     configurable :statsd_url
     configurable :statsd_port
 
-    def self.secrets_from_file(filename)
+    def self.parse_json_file(filename)
       Chef::JSONCompat.from_json(IO.read(filename))
     rescue Errno::ENOENT
       {}
@@ -216,8 +216,13 @@ module Supermarket
     def self.from_files(config_file, secrets_file)
       from_file(config_file)
       config = save(true)
-      secrets = secrets_from_file(secrets_file)
+      secrets = parse_json_file(secrets_file)
       Chef::Mixin::DeepMerge.deep_merge!(secrets, config)
+    end
+
+    def self.oauth2_config_for(application)
+      path = "/etc/opscode/oc-id-applications/#{application}.json"
+      parse_json_file(path)
     end
 
     # Take some node attributes and return them on each line as:
@@ -235,5 +240,12 @@ module Supermarket
         end
       end
     end
-  end
+  end unless defined?(Supermarket::Config)
+  # The cookbook compiler in Chef[0] calls Kernel.load, not require, for
+  # every library in a given cookbook.  This essentially makes it impossible to
+  # stub module and class methods for libraries in ChefSpec because they are
+  # reloaded after the stubs have been evaluated.  What we're doing here is
+  # preventing Chef from reloading the library so our stubs don't get whacked.
+  #
+  # [0] https://github.com/chef/chef/blob/master/lib/chef/run_context/cookbook_compiler.rb#L191
 end
