@@ -1,10 +1,4 @@
-describe 'omnibus-supermarket::config' do
-  let(:chef_run) do
-    ChefSpec::Runner.new do |node|
-      node.automatic['memory']['total'] = '16000MB'
-    end.converge(described_recipe)
-  end
-
+shared_examples 'universal supermarket config' do
   it 'creates the supermarket user' do
     expect(chef_run).to create_user('supermarket')
   end
@@ -29,6 +23,14 @@ describe 'omnibus-supermarket::config' do
     )
   end
 
+  it 'creates /etc/supermarket/secrets.json' do
+    expect(chef_run).to create_file('/etc/supermarket/secrets.json').with(
+      user: 'supermarket',
+      group: 'supermarket',
+      mode: '0600',
+    )
+  end
+
   it 'creates /var/opt/supermarket' do
     expect(chef_run).to create_directory('/var/opt/supermarket').with(
       user: 'supermarket',
@@ -43,5 +45,32 @@ describe 'omnibus-supermarket::config' do
       group: 'supermarket',
       mode: '0700',
     )
+  end
+end
+
+describe 'omnibus-supermarket::config' do
+  let(:chef_run) do
+    ChefSpec::SoloRunner.new do |node|
+      node.automatic['memory']['total'] = '16000MB'
+    end.converge(described_recipe)
+  end
+
+  context 'standalone mode' do
+    it_behaves_like 'universal supermarket config'
+
+    it 'doest not include omnibus-supermarket::combined_mode' do
+      expect(chef_run)
+        .to_not include_recipe('omnibus-supermarket::combined_mode')
+    end
+  end
+
+  context 'combined mode' do
+    before { stub_combined_config }
+
+    it_behaves_like 'universal supermarket config'
+
+    it 'includes omnibus-supermarket::combined_mode' do
+      expect(chef_run).to include_recipe('omnibus-supermarket::combined_mode')
+    end
   end
 end

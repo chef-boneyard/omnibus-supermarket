@@ -1,0 +1,562 @@
+{
+  "private_chef": {
+    "removed_services": [
+      "opscode-webui",
+      "opscode-solr",
+      "couchdb",
+      "opscode-account",
+      "opscode-org-creator",
+      "opscode-certificate"
+    ],
+    "hidden_services": [
+      "opscode-chef-mover"
+    ],
+    "api_version": "12.0.0",
+    "flavor": "cs",
+    "install_path": "/opt/opscode",
+    "notification_email": "pc-default@opscode.com",
+    "from_email": "\"Opscode\" <donotreply@opscode.com>",
+    "role": "standalone",
+    "license": {
+      "nodes": 25,
+      "upgrade_url": "http://www.getchef.com/contact/on-premises-simple"
+    },
+    "default_orgname": null,
+    "addons": {
+      "install": false,
+      "path": null,
+      "packages": [
+        "opscode-reporting",
+        "opscode-manage",
+        "opscode-analytics",
+        "opscode-push-jobs-server",
+        "chef-ha",
+        "chef-sync"
+      ],
+      "ubuntu_supported_codenames": [
+        "lucid",
+        "natty",
+        "precise"
+      ],
+      "ubuntu_distribution": "precise"
+    },
+    "user": {
+      "username": "opscode",
+      "shell": "/bin/sh",
+      "home": "/opt/opscode/embedded"
+    },
+    "service_dir_perms": "0750",
+    "couchdb": {
+      "data_dir": "/var/opt/opscode/couchdb/db",
+      "vip": "127.0.0.1",
+      "port": 5984
+    },
+    "opscode-solr": {
+      "data_dir": "/var/opt/opscode/opscode-solr/data",
+      "vip": "127.0.0.1",
+      "port": 8983
+    },
+    "rabbitmq": {
+      "enable": true,
+      "ha": false,
+      "dir": "/var/opt/opscode/rabbitmq",
+      "data_dir": "/var/opt/opscode/rabbitmq/db",
+      "log_directory": "/var/log/opscode/rabbitmq",
+      "log_rotation": {
+        "file_maxbytes": 104857600,
+        "num_to_keep": 10
+      },
+      "vhost": "/chef",
+      "user": "chef",
+      "password": "c752f85e6302460bb5d66d499f127a2241afa80c1434e00cf02a1448526038525dd7afe0863c2a0bf24dcdadc7b20d703c5d",
+      "reindexer_vhost": "/reindexer",
+      "jobs_vhost": "/jobs",
+      "jobs_user": "jobs",
+      "jobs_password": "386213ed002c7da3a2e085ec1b3df90bb50a639cae4446bd07d1f155006b6d3d98f79eac3a94d7bbc0a819a0056e8476da46",
+      "actions_user": "actions",
+      "actions_password": "da115808aafa684b625a8bb5a9ae74dd15cb3c78fa1532df55f86b48e771d5eea0b175f64b5b654dc7f61d91764aee463266",
+      "actions_vhost": "/analytics",
+      "actions_exchange": "actions",
+      "node_ip_address": "127.0.0.1",
+      "node_port": "5672",
+      "nodename": "rabbit@localhost",
+      "vip": "127.0.0.1",
+      "consumer_id": "hotsauce",
+      "env_path": "/opt/opscode/bin:/opt/opscode/embedded/bin:/usr/bin:/bin"
+    },
+    "jetty": {
+      "enable": false,
+      "ha": false,
+      "log_directory": "/var/opt/opscode/opscode-solr4/jetty/logs"
+    },
+    "opscode-solr4": {
+      "enable": true,
+      "ha": false,
+      "dir": "/var/opt/opscode/opscode-solr4",
+      "data_dir": "/var/opt/opscode/opscode-solr4/data",
+      "log_directory": "/var/log/opscode/opscode-solr4",
+      "log_rotation": {
+        "file_maxbytes": 104857600,
+        "num_to_keep": 10
+      },
+      "heap_size": 500,
+      "new_size": 32,
+      "java_opts": " -XX:NewSize=32M -XX:+UseConcMarkSweepGC -XX:+UseParNewGC",
+      "url": "http://localhost:8983/solr",
+      "ip_address": "127.0.0.1",
+      "vip": "127.0.0.1",
+      "port": 8983,
+      "ram_buffer_size": 100,
+      "merge_factor": 15,
+      "max_merge_docs": 2147483647,
+      "max_field_length": 100000,
+      "max_commit_docs": 1000,
+      "auto_soft_commit": 1000,
+      "commit_interval": 60000,
+      "poll_seconds": 20,
+      "command": "java -Xmx500M -Xms500M -XX:NewSize=32M -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -Xloggc:/var/log/opscode/opscode-solr4/gclog.log -verbose:gc -XX:+PrintHeapAtGC -XX:+PrintGCTimeStamps -XX:+PrintGCDetails -XX:+PrintGCApplicationStoppedTime -XX:+PrintGCApplicationConcurrentTime -XX:+PrintTenuringDistribution -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=8086 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dsolr.data.dir=/var/opt/opscode/opscode-solr4/data -Dsolr.solr.home=/var/opt/opscode/opscode-solr4/home -server -jar '/opt/opscode/embedded/service/opscode-solr4/jetty/start.jar'"
+    },
+    "opscode-expander": {
+      "enable": true,
+      "ha": false,
+      "dir": "/var/opt/opscode/opscode-expander",
+      "log_directory": "/var/log/opscode/opscode-expander",
+      "log_rotation": {
+        "file_maxbytes": 104857600,
+        "num_to_keep": 10
+      },
+      "reindexer_log_directory": "/var/log/opscode/opscode-expander-reindexer",
+      "consumer_id": "default",
+      "nodes": 2
+    },
+    "opscode-erchef": {
+      "enable": true,
+      "ha": false,
+      "dir": "/var/opt/opscode/opscode-erchef",
+      "log_directory": "/var/log/opscode/opscode-erchef",
+      "log_rotation": {
+        "file_maxbytes": 104857600,
+        "num_to_keep": 10
+      },
+      "vip": "127.0.0.1",
+      "listen": "127.0.0.1",
+      "port": 8000,
+      "auth_skew": "900",
+      "authz_pooler_timeout": "0",
+      "bulk_fetch_batch_size": "5",
+      "max_cache_size": "10000",
+      "cache_ttl": "3600",
+      "db_pool_size": "20",
+      "db_pooler_timeout": "0",
+      "sql_db_timeout": 5000,
+      "udp_socket_pool_size": "20",
+      "db_pool_queue_max": "20",
+      "couchdb_max_conn": "100",
+      "ibrowse_max_sessions": 256,
+      "ibrowse_max_pipeline_size": 1,
+      "base_resource_url": "host_header",
+      "s3_bucket": "bookshelf",
+      "s3_url_ttl": 28800,
+      "nginx_bookshelf_caching": "off",
+      "s3_url_expiry_window_size": "off",
+      "s3_parallel_ops_timeout": 5000,
+      "s3_parallel_ops_fanout": 20,
+      "authz_timeout": 2000,
+      "authz_fanout": 20,
+      "root_metric_key": "chefAPI",
+      "depsolver_worker_count": 5,
+      "depsolver_timeout": 5000,
+      "max_request_size": 1000000,
+      "cleanup_batch_size": 0
+    },
+    "opscode-chef": {
+      "checksum_path": "/var/opt/opscode/opscode-chef/checksum"
+    },
+    "opscode-webui": {
+      "enable": false
+    },
+    "oc-chef-pedant": {
+      "dir": "/var/opt/opscode/oc-chef-pedant",
+      "log_directory": "/var/log/opscode/oc-chef-pedant",
+      "log_http_requests": true,
+      "log_rotation": {
+        "file_maxbytes": 104857600,
+        "num_to_keep": 10
+      },
+      "debug_org_creation": false
+    },
+    "redis_lb": {
+      "enable": true,
+      "ha": false,
+      "dir": "/var/opt/opscode/redis_lb",
+      "data_dir": "/var/opt/opscode/redis_lb/data",
+      "log_directory": "/var/log/opscode/redis_lb",
+      "log_rotation": {
+        "file_maxbytes": 1000000,
+        "num_to_keep": 10
+      },
+      "port": "16379",
+      "bind": "127.0.0.1",
+      "vip": "127.0.0.1",
+      "keepalive": "60",
+      "timeout": "300",
+      "loglevel": "notice",
+      "databases": "16",
+      "appendonly": "no",
+      "appendfsync": "always",
+      "activerehashing": "no",
+      "aof_rewrite_percent": "50",
+      "aof_rewrite_min_size": "16mb",
+      "maxmemory": "8m",
+      "maxmemory_policy": "noeviction",
+      "save_frequency": {
+        "900": "1",
+        "300": "10",
+        "60": "1000"
+      }
+    },
+    "lb": {
+      "enable": true,
+      "vip": "127.0.0.1",
+      "api_fqdn": "supermarket",
+      "web_ui_fqdn": "supermarket",
+      "cache_cookbook_files": false,
+      "debug": false,
+      "upstream": {
+        "opscode-erchef": [
+          "127.0.0.1"
+        ],
+        "oc_bifrost": [
+          "127.0.0.1"
+        ],
+        "opscode-solr4": [
+          "127.0.0.1"
+        ],
+        "bookshelf": [
+          "127.0.0.1"
+        ]
+      },
+      "redis_connection_timeout": 1000,
+      "redis_keepalive_timeout": 2000,
+      "redis_connection_pool_size": 250,
+      "maint_refresh_interval": 600,
+      "ban_refresh_interval": 600,
+      "chef_min_version": 10,
+      "xdl_defaults": {
+        "503_mode": false,
+        "couchdb_containers": false,
+        "couchdb_groups": false,
+        "couchdb_acls": false,
+        "couchdb_association_requests": false,
+        "couchdb_organizations": false,
+        "couchdb_associations": false,
+        "policies": false
+      }
+    },
+    "lb_internal": {
+      "enable": true,
+      "vip": "127.0.0.1",
+      "chef_port": 9680,
+      "account_port": 9685,
+      "oc_bifrost_port": 9683
+    },
+    "nginx": {
+      "enable": true,
+      "ha": false,
+      "dir": "/var/opt/opscode/nginx",
+      "log_directory": "/var/log/opscode/nginx",
+      "log_rotation": {
+        "file_maxbytes": 104857600,
+        "num_to_keep": 10
+      },
+      "log_x_forwarded_for": false,
+      "ssl_port": 443,
+      "enable_non_ssl": false,
+      "non_ssl_port": 80,
+      "x_forwarded_proto": "https",
+      "server_name": "supermarket",
+      "url": "https://supermarket",
+      "proxy_connect_timeout": 1,
+      "ssl_protocols": "TLSv1 TLSv1.1 TLSv1.2",
+      "ssl_ciphers": "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA",
+      "ssl_certificate": "/var/opt/opscode/nginx/ca/supermarket.crt",
+      "ssl_certificate_key": "/var/opt/opscode/nginx/ca/supermarket.key",
+      "ssl_country_name": "US",
+      "ssl_state_name": "WA",
+      "ssl_locality_name": "Seattle",
+      "ssl_company_name": "YouCorp",
+      "ssl_organizational_unit_name": "Operations",
+      "ssl_email_address": "you@example.com",
+      "worker_processes": 2,
+      "worker_connections": 10240,
+      "sendfile": "on",
+      "tcp_nopush": "on",
+      "tcp_nodelay": "on",
+      "gzip": "on",
+      "gzip_http_version": "1.0",
+      "gzip_comp_level": "2",
+      "gzip_proxied": "any",
+      "gzip_types": [
+        "text/plain",
+        "text/css",
+        "application/x-javascript",
+        "text/xml",
+        "application/xml",
+        "application/xml+rss",
+        "text/javascript",
+        "application/json"
+      ],
+      "keepalive_timeout": 65,
+      "client_max_body_size": "250m",
+      "cache_max_size": "5000m",
+      "enable_ipv6": false
+    },
+    "postgresql": {
+      "version": "9.2",
+      "enable": true,
+      "ha": false,
+      "dir": "/var/opt/opscode/postgresql/9.2",
+      "data_dir": "/var/opt/opscode/postgresql/9.2/data",
+      "log_directory": "/var/log/opscode/postgresql/9.2",
+      "log_min_duration_statement": -1,
+      "log_rotation": {
+        "file_maxbytes": 104857600,
+        "num_to_keep": 10
+      },
+      "username": "opscode-pgsql",
+      "shell": "/bin/sh",
+      "home": "/var/opt/opscode/postgresql",
+      "user_path": "/opt/opscode/embedded/bin:/opt/opscode/bin:$PATH",
+      "sql_user": "opscode_chef",
+      "sql_password": "5ea18b61f7a6cd71aab48952431fbfaa68665b02576655c60fd622bd6419449307953ee1d02fb9fe9c3886656927fc680b90",
+      "sql_ro_user": "opscode_chef_ro",
+      "sql_ro_password": "21d7b7167cb2e083946968b6ed7ba2cfbda2621972a89acc25a3a990ade62b80ff6f7d9a677a34cdd569930f1f3cb5c3d8b3",
+      "vip": "127.0.0.1",
+      "port": 5432,
+      "listen_address": "localhost",
+      "max_connections": 350,
+      "keepalives_idle": 60,
+      "keepalives_interval": 15,
+      "keepalives_count": 2,
+      "md5_auth_cidr_addresses": [
+        "127.0.0.1/32",
+        "::1/128"
+      ],
+      "shmmax": 17179869184,
+      "shmall": 4194304,
+      "shared_buffers": "500MB",
+      "work_mem": "8MB",
+      "effective_cache_size": "1000MB",
+      "checkpoint_segments": 3,
+      "checkpoint_timeout": "5min",
+      "checkpoint_completion_target": 0.5,
+      "checkpoint_warning": "30s"
+    },
+    "oc_bifrost": {
+      "enable": true,
+      "ha": false,
+      "dir": "/var/opt/opscode/oc_bifrost",
+      "log_directory": "/var/log/opscode/oc_bifrost",
+      "log_rotation": {
+        "file_maxbytes": 104857600,
+        "num_to_keep": 10
+      },
+      "vip": "127.0.0.1",
+      "listen": "127.0.0.1",
+      "port": 9463,
+      "superuser_id": "5883eda242911851e21955e320323240",
+      "db_pool_size": "20",
+      "sql_user": "bifrost",
+      "sql_password": "a8b17c1c4383e9fc8901e7a33ab23e52e5463dd2f3494978c72914210ac31108d53f1f2b5c0e5ec786c4ba171e4024570d06",
+      "sql_ro_user": "bifrost_ro",
+      "sql_ro_password": "25ec103b27b27838fbf7195be39703468ec4ee4f5b302e5824ee0833564a12a33d40ba83e5cdc87375fab2a904af85a13449",
+      "sql_db_timeout": 5000,
+      "extended_perf_log": true
+    },
+    "oc_chef_authz": {
+      "http_init_count": 25,
+      "http_max_count": 100,
+      "http_cull_interval": "{1, min}",
+      "http_max_age": "{70, sec}",
+      "http_max_connection_duration": "{70, sec}",
+      "ibrowse_options": "[{connect_timeout, 5000}]"
+    },
+    "bookshelf": {
+      "enable": true,
+      "ha": false,
+      "dir": "/var/opt/opscode/bookshelf",
+      "data_dir": "/var/opt/opscode/bookshelf/data",
+      "log_directory": "/var/log/opscode/bookshelf",
+      "log_rotation": {
+        "file_maxbytes": 104857600,
+        "num_to_keep": 10
+      },
+      "vip": "supermarket",
+      "listen": "127.0.0.1",
+      "port": 4321,
+      "stream_download": true,
+      "access_key_id": "65f61f87f545afa0a5249254e9f3012d41759110",
+      "secret_access_key": "a332195b055363faeebd94be8d8982d0b1ea8b8363e05c1032f66ec76ae2e2b6a1da6da2c3e3e7c6",
+      "external_url": "host_header"
+    },
+    "oc_id": {
+      "enable": true,
+      "ha": false,
+      "dir": "/var/opt/opscode/oc_id",
+      "log_directory": "/var/log/opscode/oc_id",
+      "log_rotation": {
+        "file_maxbytes": 104857600,
+        "num_to_keep": 10
+      },
+      "vip": "127.0.0.1",
+      "port": 9090,
+      "sql_database": "oc_id",
+      "sql_user": "oc_id",
+      "sql_password": "35ebb6c3c3fff385db74c7329709943ad476a999c879dadb41af6b869bee9456fa04357b5742f8491842ab63dcd603a987f0",
+      "db_pool_size": "20",
+      "sentry_dsn": null,
+      "sign_up_url": null,
+      "administrators": [
+
+      ],
+      "applications": {
+
+      },
+      "secret_key_base": "c119af931fe928a6c13b5c1d3de2c25356b54278adfb403f716541142e9c6f95a5c5292c3c5e3429a7db19e1b1f93fd0878d"
+    },
+    "dark_launch": {
+      "quick_start": false,
+      "new_theme": true,
+      "private-chef": true,
+      "sql_users": true,
+      "add_type_and_bag_to_items": true,
+      "reporting": true,
+      "actions": true
+    },
+    "opscode-chef-mover": {
+      "enable": true,
+      "ha": false,
+      "dir": "/var/opt/opscode/opscode-chef-mover",
+      "data_dir": "/var/opt/opscode/opscode-chef-mover/data",
+      "log_directory": "/var/log/opscode/opscode-chef-mover",
+      "log_rotation": {
+        "file_maxbytes": 1073741824,
+        "num_to_keep": 10
+      },
+      "bulk_fetch_batch_size": 5,
+      "max_cache_size": "10000",
+      "cache_ttl": "3600",
+      "db_pool_size": "5",
+      "sql_db_timeout": 5000,
+      "ibrowse_max_sessions": 256,
+      "ibrowse_max_pipeline_size": 1,
+      "solr_timeout": 30000,
+      "solr_http_init_count": 25,
+      "solr_http_max_count": 100,
+      "solr_http_cull_interval": "{1, min}",
+      "solr_http_max_age": "{70, sec}",
+      "solr_http_max_connection_duration": "{70,sec}",
+      "solr_ibrowse_options": "[{connect_timeout, 10000}]"
+    },
+    "bootstrap": {
+      "enable": true
+    },
+    "estatsd": {
+      "enable": true,
+      "dir": "/var/opt/opscode/estatsd",
+      "log_directory": "/var/log/opscode/estatsd",
+      "vip": "127.0.0.1",
+      "port": 9466
+    },
+    "keepalived": {
+      "enable": false,
+      "dir": "/var/opt/opscode/keepalived",
+      "ipv6_on": false,
+      "log_directory": "/var/log/opscode/keepalived",
+      "log_rotation": {
+        "file_maxbytes": 104857600,
+        "num_to_keep": 10
+      },
+      "smtp_server": "127.0.0.1",
+      "smtp_connect_timeout": "30",
+      "vrrp_sync_group": "PC_GROUP",
+      "vrrp_sync_instance": "PC_VI",
+      "vrrp_instance_state": "BACKUP",
+      "vrrp_instance_interface": "eth0",
+      "vrrp_instance_virtual_router_id": "1",
+      "vrrp_instance_priority": "100",
+      "vrrp_instance_advert_int": "1",
+      "vrrp_instance_password": "3ce420eaf42910b4027bc2b8f484a4757bb6baee122f7a3ecc4092eecec35c948e98fd9a6bc7c5efb12ddd6b9945b39ad3dc",
+      "vrrp_instance_ipaddress": "10.0.2.15",
+      "vrrp_instance_ipaddress_dev": "eth0",
+      "vrrp_instance_vrrp_unicast_bind": "10.0.2.15",
+      "vrrp_instance_vrrp_unicast_peer": null,
+      "vrrp_instance_preempt_delay": 30,
+      "vrrp_instance_nopreempt": true,
+      "service_posthooks": {
+        "rabbitmq": "/opt/opscode/bin/wait-for-rabbit"
+      }
+    },
+    "ldap": {
+
+    },
+    "upgrades": {
+      "dir": "/var/opt/opscode/upgrades"
+    },
+    "folsom_graphite": {
+      "enabled": false,
+      "host": "localhost",
+      "port": 8080,
+      "prefix": "stats_prefix",
+      "send_interval": 10000
+    },
+    "folsom-graphite": {
+
+    },
+    "lb-internal": {
+
+    },
+    "drbd": {
+      "shared_secret": "2ba5856afb58ed439bfb337d3837b04ec5d631796f4e9b06816e3f2f8a83"
+    },
+    "ha": {
+
+    },
+    "disabled-plugins": [
+
+    ],
+    "enabled-plugins": [
+
+    ],
+    "topology": "standalone",
+    "servers": {
+
+    },
+    "backend_vips": {
+
+    },
+    "logs": {
+      "log_retention": {
+
+      },
+      "log_rotation": {
+
+      }
+    }
+  },
+  "run_list": [
+  "recipe[private-chef::default]"
+]
+,
+  "runit": {
+    "sv_bin": "/opt/opscode/embedded/bin/sv",
+    "chpst_bin": "/opt/opscode/embedded/bin/chpst",
+    "service_dir": "/opt/opscode/service",
+    "sv_dir": "/opt/opscode/sv",
+    "lsb_init_dir": "/opt/opscode/init",
+    "executable": "/sbin/runit",
+    "start": "start runsvdir",
+    "stop": "stop runsvdir",
+    "reload": "reload runsvdir"
+  }
+}
