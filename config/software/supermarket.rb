@@ -1,5 +1,5 @@
 #
-# Copyright 2014 Chef Software, Inc.
+# Copyright 2014-2015 Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 #
 
 name "supermarket"
-default_version "1.6.0-alpha.0"
+default_version "1.7.0-alpha.0"
 
 dependency "bundler"
 dependency "cacerts"
@@ -27,7 +27,7 @@ dependency "redis"
 dependency "ruby"
 dependency "runit"
 
-source git: "https://github.com/opscode/supermarket.git"
+source git: "https://github.com/chef/supermarket.git"
 
 build do
   env = with_standard_compiler_flags(with_embedded_path)
@@ -38,7 +38,6 @@ build do
          " --path=vendor/bundle" \
          " --without development",
          env: env
-  # This fails because we're installing Ruby C extensions in the wrong place!
   bundle "exec rake assets:precompile", env: env.merge('RAILS_ENV' => 'production')
 
   sync project_dir, "#{install_dir}/embedded/service/supermarket/"
