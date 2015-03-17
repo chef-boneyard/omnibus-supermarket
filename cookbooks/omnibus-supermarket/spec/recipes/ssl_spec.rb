@@ -1,6 +1,6 @@
 describe 'omnibus-supermarket::ssl' do
   let(:chef_run) do
-    ChefSpec::Runner.new do |node|
+    ChefSpec::SoloRunner.new do |node|
       node.set['supermarket']['ssl']['openssl_bin'] = '/usr/bin/true'
       node.automatic['memory']['total'] = '16000MB'
     end.converge(described_recipe)

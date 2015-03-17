@@ -2,7 +2,7 @@
 # Cookbook Name:: supermarket
 # Recipe:: config
 #
-# Copyright 2014 Chef Software, Inc.
+# Copyright 2015 Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,30 +16,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+config_file = "#{node['supermarket']['config_directory']}/supermarket.rb"
+secrets_file = "#{node['supermarket']['config_directory']}/secrets.json"
 
-# Get and/or create config and secrets.
-#
-# This creates the config_directory if it does not exist as well as the files
-# in it.
-Supermarket::Config.load_or_create!(
-  "#{node['supermarket']['config_directory']}/supermarket.rb",
-  node,
-)
-Supermarket::Config.load_from_json!(
-  "#{node['supermarket']['config_directory']}/supermarket.json",
-  node,
-)
-Supermarket::Config.load_or_create_secrets!(
-  "#{node['supermarket']['config_directory']}/secrets.json",
-  node,
-)
+begin
+  attributes = Supermarket::Config.from_files(config_file, secrets_file)
+rescue Errno::ENOENT
+  Chef::Log.debug("Missing #{config_file}. Skipping.")
+rescue NoMethodError
+  Chef::Log.fatal("Invalid attributes in #{config_file}")
+  raise
+ensure
+  node.consume_attributes('supermarket' => attributes)
+end
+
+include_recipe 'omnibus-supermarket::combined_mode' if combined_mode?
 
 # Copy things we need from the supermarket namespace to the top level. This is
 # necessary for some community cookbooks.
 node.consume_attributes('nginx' => node['supermarket']['nginx'],
                         'runit' => node['supermarket']['runit'])
 
-# set chef_oauth2_url from chef_server_url after this value has been loaded from config
+# set chef_oauth2_url from chef_server_url after this value has been loaded
+# from config
 if node['supermarket']['chef_server_url'] && node['supermarket']['chef_oauth2_url'].nil?
   node.set['supermarket']['chef_oauth2_url'] = node['supermarket']['chef_server_url']
 end
@@ -67,13 +66,14 @@ directory "#{node['supermarket']['var_directory']}/etc" do
   mode '0700'
 end
 
-file "#{node['supermarket']['config_directory']}/supermarket.rb" do
+file config_file do
   owner node['supermarket']['user']
   group node['supermarket']['group']
   mode '0600'
 end
 
-file "#{node['supermarket']['config_directory']}/secrets.json" do
+file secrets_file do
+  content Supermarket::Config.secrets_to_json(node)
   owner node['supermarket']['user']
   group node['supermarket']['group']
   mode '0600'

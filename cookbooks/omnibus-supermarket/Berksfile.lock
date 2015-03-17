@@ -3,6 +3,9 @@ DEPENDENCIES
     git: https://github.com/opscode-cookbooks/enterprise-chef-common.git
     revision: bbbe5f85f13d5828b116cef72de9f31f7bec8a23
     tag: 0.4.5
+  oc_id_application
+    git: https://github.com/ryancragun/oc_id_application-cookbook.git
+    revision: 2af9c3047924fc1d06180796a3edb13b98599184
   omnibus-supermarket
     path: .
     metadata: true
@@ -26,6 +29,7 @@ GRAPH
     ohai (~> 2.0)
     runit (~> 1.2)
     yum-epel (~> 0.3)
+  oc_id_application (0.1.0)
   ohai (2.0.1)
   omnibus (2.4.0)
     7-zip (~> 1.0)
@@ -37,6 +41,7 @@ GRAPH
   omnibus-supermarket (1.0.0)
     enterprise (>= 0.0.0)
     nginx (>= 0.0.0)
+    oc_id_application (>= 0.0.0)
     omnibus (>= 0.0.0)
     runit (>= 0.0.0)
     sysctl (>= 0.0.0)

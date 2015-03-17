@@ -21,22 +21,26 @@ include_recipe 'omnibus-supermarket::config'
 include_recipe 'sysctl'
 include_recipe 'enterprise::runit'
 
-# These sysctl settings make the shared memory settings work for larger
-# instances
-%w[ shmmax shmall ].each do |param|
-  sysctl_param "kernel.#{param}" do
-    value node['supermarket']['postgresql'][param]
+if combined_mode?
+  execute 'chef-server-ctl start postgresql' do
+    retries 20
   end
-end
+elsif service_enabled?('postgresql')
+  # These sysctl settings make the shared memory settings work for larger
+  # instances
+  %w(shmmax shmall).each do |param|
+    sysctl_param "kernel.#{param}" do
+      value node['supermarket']['postgresql'][param]
+    end
+  end
 
-directory node['supermarket']['postgresql']['log_directory'] do
-  owner node['supermarket']['user']
-  group node['supermarket']['group']
-  mode '0700'
-  recursive true
-end
+  directory node['supermarket']['postgresql']['log_directory'] do
+    owner node['supermarket']['user']
+    group node['supermarket']['group']
+    mode '0700'
+    recursive true
+  end
 
-if node['supermarket']['postgresql']['enable']
   enterprise_pg_cluster node['supermarket']['postgresql']['data_directory'] do
     encoding 'UTF8'
     notifies :restart, 'runit_service[postgresql]'
