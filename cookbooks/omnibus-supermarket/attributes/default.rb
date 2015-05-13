@@ -303,7 +303,7 @@ default['supermarket']['database']['name'] = 'supermarket'
 default['supermarket']['database']['host'] = node['supermarket']['postgresql']['listen_address']
 default['supermarket']['database']['port'] = node['supermarket']['postgresql']['port']
 default['supermarket']['database']['pool'] = node['supermarket']['sidekiq']['concurrency']
-default['supermarket']['database']['extensions'] = { 'pgpsql' => true, 'pg_trgm' => 'true' }
+default['supermarket']['database']['extensions'] = { 'plpgsql' => true, 'pg_trgm' => 'true' }
 
 # ## App-specific top-level attributes
 #
@@ -398,9 +398,10 @@ default['supermarket']['seed_cla_data'] = nil
 # * fieri: Use the fieri service to report on cookbook quality (requires
 #   fieri_url and fieri_key to be set.)
 # * github: Enable GitHub integration, used with CLA signing
+# * gravatar: Enable Gravatar integration, used for user avatars
 # * join_ccla: Enable joining of Corporate CLAs
 # * tools: Enable the tools section
-default['supermarket']['features'] = 'tools'
+default['supermarket']['features'] = 'tools, gravatar'
 
 # ### robots.txt Settings
 #

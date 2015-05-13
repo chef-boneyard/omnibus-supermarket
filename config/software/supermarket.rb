@@ -19,6 +19,7 @@ default_version "1.10.0-alpha.0"
 
 dependency "bundler"
 dependency "cacerts"
+dependency "chef"
 dependency "git"
 dependency "nginx"
 dependency "nodejs"
