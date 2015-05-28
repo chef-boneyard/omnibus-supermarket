@@ -241,6 +241,7 @@ default['supermarket']['ssl']['openssl_bin'] = "#{node['supermarket']['install_d
 # attempt to generate a self-signed certificate and use that instead.
 default['supermarket']['ssl']['certificate'] = nil
 default['supermarket']['ssl']['certificate_key'] = nil
+default['supermarket']['ssl']['ssl_dhparam'] = nil
 
 # These are used in creating a self-signed cert if you haven't brought your own.
 default['supermarket']['ssl']['country_name'] = "US"
@@ -249,6 +250,7 @@ default['supermarket']['ssl']['locality_name'] = "Seattle"
 default['supermarket']['ssl']['company_name'] = "My Supermarket"
 default['supermarket']['ssl']['organizational_unit_name'] = "Operations"
 default['supermarket']['ssl']['email_address'] = "you@example.com"
+
 
 # ### Cipher settings
 #
