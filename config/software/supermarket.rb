@@ -15,7 +15,7 @@
 #
 
 name "supermarket"
-default_version "master"
+default_version "enhance-adoption-email"
 
 dependency "bundler"
 dependency "cacerts"
