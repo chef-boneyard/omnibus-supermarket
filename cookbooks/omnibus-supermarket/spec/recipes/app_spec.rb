@@ -1,6 +1,6 @@
 describe 'omnibus-supermarket::app' do
   let(:chef_run) do
-    ChefSpec::Runner.new do |node|
+    ChefSpec::SoloRunner.new do |node|
       node.automatic['memory']['total'] = '16000MB'
     end.converge(described_recipe)
   end
@@ -11,6 +11,17 @@ describe 'omnibus-supermarket::app' do
       group: 'supermarket',
       mode: '0600',
     )
+  end
+
+  it 'creates sitemap files with the correct permissions' do
+    files = ['/opt/supermarket/embedded/service/supermarket/public/sitemap.xml.gz',
+             '/opt/supermarket/embedded/service/supermarket/public/sitemap1.xml.gz']
+    files.each do |file|
+      expect(chef_run).to create_file(file)
+        .with( owner: 'supermarket',
+               group: 'supermarket',
+               mode:  '0664' )
+    end
   end
 
   it 'links the env file' do
