@@ -15,7 +15,7 @@
 #
 
 name "supermarket"
-default_version "master"
+default_version "fix-tarball-url"
 
 dependency "bundler"
 dependency "cacerts"
@@ -29,7 +29,7 @@ dependency "ruby"
 dependency "runit"
 dependency "logrotate"
 
-source git: "https://github.com/chef/supermarket.git"
+source git: "https://github.com/nellshamrell/supermarket.git"
 
 build do
   env = with_standard_compiler_flags(with_embedded_path)
