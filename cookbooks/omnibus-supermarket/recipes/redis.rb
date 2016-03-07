@@ -45,6 +45,8 @@ end
 # Redis gives you a warning if you don't do this
 sysctl_param 'vm.overcommit_memory' do
   value 1
+  # ignore if on lxc.
+  not_if "grep -q lxc /proc/self/cgroup"
 end
 
 if node['supermarket']['redis']['enable']
